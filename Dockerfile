@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.8-slim
 
 # Install system dependencies needed for psycopg2 and other packages
 RUN apt-get update && apt-get install -y \
@@ -6,6 +6,9 @@ RUN apt-get update && apt-get install -y \
     g++ \
     libpq-dev \
     python3-dev \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -13,8 +16,8 @@ WORKDIR /app
 # Copy requirements and install dependencies
 COPY requirements.txt .
 
-# Upgrade pip and install dependencies
-RUN pip install --upgrade pip
+# Use older pip version that works better with these old packages
+RUN pip install pip==20.3.4
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
