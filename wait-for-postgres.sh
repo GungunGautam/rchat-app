@@ -3,13 +3,16 @@ set -e
 
 host="$1"
 shift
+cmd="$@"
 
-export PGPASSWORD=${POSTGRES_PASSWORD:-mypassword}
+echo "Waiting for Postgres at $host:5432..."
 
-until psql -h "$host" -U ${POSTGRES_USER:-myuser} -d ${POSTGRES_DB:-mydb} -c '\q'; do
+# Loop until the port is open
+until nc -z "$host" 5432; do
   echo "Postgres is unavailable - sleeping"
-  sleep 1
+  sleep 2
 done
 
-exec "$@"
+echo "Postgres is up - executing command"
+exec $cmd
 

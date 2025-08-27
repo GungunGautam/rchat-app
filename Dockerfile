@@ -7,6 +7,7 @@ RUN apt-get update \
        g++ \
        libpq-dev \
        build-essential \
+       netcat \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

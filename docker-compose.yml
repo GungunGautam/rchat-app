@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: gungun
-      POSTGRES_PASSWORD: gunguin123
+      POSTGRES_PASSWORD: gungun123
       POSTGRES_DB: chatdb
     ports:
       - "5432:5432"
