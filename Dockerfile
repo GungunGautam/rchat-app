@@ -15,6 +15,8 @@ WORKDIR /app
 RUN pip install --no-cache-dir \
     Flask==1.0.2 \
     Flask-SQLAlchemy==2.3.2 \
+    Flask-Login==0.4.1 \
+    Flask-SocketIO==3.3.2 \
     psycopg2-binary \
     gunicorn
 
