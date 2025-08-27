@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: gungun
+      POSTGRES_PASSWORD: gungun123
+      POSTGRES_DB: chatdb
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    restart: always
+    ports:
+      - "5000:5000"i
+    environment:
+      DATABASE_URL: postgresql://gungun:gungun123@db:5432/chatdb
+      SECRET: "supersecretkey"
+    depends_on:
+      - db
+
