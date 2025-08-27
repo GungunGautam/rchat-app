@@ -1,35 +1,22 @@
-# Core
 Flask==2.2.5
 Flask-Login==0.6.2
 Flask-SocketIO==5.3.6
 Flask-SQLAlchemy==3.0.5
 Flask-WTF==1.2.1
-
-# SocketIO backend
 python-socketio==5.11.2
 python-engineio==4.11.1
 gevent==22.10.2
 gevent-websocket==0.10.1
 greenlet==2.0.2
-
-# Database
 SQLAlchemy==1.4.52
 psycopg2-binary==2.9.9
-
-# Utilities
 passlib==1.7.4
 itsdangerous==2.1.2
 Werkzeug==2.2.3
 WTForms==3.1.2
-
-# Templating
 Jinja2==3.1.5
 MarkupSafe==2.1.5
-
-# Web server
 gunicorn==20.1.0
-
-# Others
 click==8.1.7
 six==1.16.0
 

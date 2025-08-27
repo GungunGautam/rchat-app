@@ -11,14 +11,11 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Install only essential packages without strict versioning
-RUN pip install --no-cache-dir \
-    Flask==1.0.2 \
-    Flask-SQLAlchemy==2.3.2 \
-    Flask-Login==0.4.1 \
-    Flask-SocketIO==3.3.2 \
-    psycopg2-binary \
-    gunicorn
+# Copy requirements first (for caching)
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
@@ -28,3 +25,4 @@ EXPOSE 5000
 
 # Command to run the application
 CMD ["python", "application.py"]
+
