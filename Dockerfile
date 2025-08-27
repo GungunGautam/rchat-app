@@ -1,25 +1,12 @@
-FROM python:3.8-slim
-
-# Update package lists and install system dependencies
-RUN apt-get update -y && apt-get install -y \
-    gcc \
-    g++ \
-    libpq-dev \
-    python3-dev \
-    build-essential \
-    libffi-dev \
-    libssl-dev \
-    pkg-config \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+FROM python:3.8
 
 WORKDIR /app
 
-# Copy requirements file first (for better caching)
+# Copy requirements file
 COPY requirements.txt .
 
-# Upgrade pip and install dependencies
-RUN pip install --upgrade pip setuptools wheel
+# Install dependencies
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
