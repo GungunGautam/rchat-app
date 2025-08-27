@@ -15,7 +15,7 @@ services:
     build: .
     restart: always
     ports:
-      - "5000:5000"i
+      - "5000:5000"
     environment:
       DATABASE_URL: postgresql://gungun:gungun123@db:5432/chatdb
       SECRET: "supersecretkey"
