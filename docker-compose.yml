@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: gungun
-      POSTGRES_PASSWORD: gungun123
+      POSTGRES_PASSWORD: gunguin123
       POSTGRES_DB: chatdb
     ports:
       - "5432:5432"
@@ -21,4 +21,5 @@ services:
       SECRET: "supersecretkey"
     depends_on:
       - db
+    command: ["./wait-for-postgres.sh", "db", "python", "application.py"]  
 
