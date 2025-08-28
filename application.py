@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import pbkdf2_sha256
 
 from wtform_fields import *
-from models import *
+from models import db, User
 
 # Configure app
 app = Flask(__name__)
@@ -19,7 +19,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize database
-db = SQLAlchemy()
 db.init_app(app)
 
 # Initialize login manager
