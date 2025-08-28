@@ -27,7 +27,7 @@ login.init_app(app)
 
 @login.user_loader
 def load_user(id):
-    return User.query.get(int(id))
+    return db.session.get(User, int(id))
 
 # Initialize SocketIO
 socketio = SocketIO(app, manage_session=False)
