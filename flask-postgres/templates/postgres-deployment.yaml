@@ -1,0 +1,85 @@
+{{- if .Values.simplePostgres.enabled }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "flask-postgres.fullname" . }}-postgres-secret
+  labels:
+    {{- include "flask-postgres.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  POSTGRES_USER: {{ .Values.postgresql.auth.username }}
+  POSTGRES_PASSWORD: {{ .Values.postgresql.auth.password }}
+  POSTGRES_DB: {{ .Values.postgresql.auth.database }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "flask-postgres.fullname" . }}-postgres-pvc
+  labels:
+    {{- include "flask-postgres.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "flask-postgres.fullname" . }}-postgres
+  labels:
+    {{- include "flask-postgres.labels" . | nindent 4 }}
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "flask-postgres.selectorLabels" . | nindent 6 }}
+      app: postgres
+  template:
+    metadata:
+      labels:
+        {{- include "flask-postgres.selectorLabels" . | nindent 8 }}
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: {{ .Values.simplePostgres.image }}
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+            name: {{ include "flask-postgres.fullname" . }}-postgres-secret
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - pg_isready -U {{ .Values.postgresql.auth.username }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: {{ include "flask-postgres.fullname" . }}-postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "flask-postgres.fullname" . }}-postgres
+  labels:
+    {{- include "flask-postgres.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "flask-postgres.selectorLabels" . | nindent 4 }}
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+  clusterIP: None
+{{- end }}

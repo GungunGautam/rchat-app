@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "flask-postgres.fullname" . }}
+  labels:
+    {{- include "flask-postgres.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.flask.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "flask-postgres.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "flask-postgres.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: flask
+        image: "{{ .Values.flask.image.repository }}:{{ .Values.flask.image.tag }}"
+        imagePullPolicy: {{ .Values.flask.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.flask.port }}
+          protocol: TCP
+        
+        env:
+        - name: FLASK_ENV
+          value: {{ .Values.flask.env.FLASK_ENV | quote }}
+        - name: FLASK_APP
+          value: {{ .Values.flask.env.FLASK_APP | quote }}
+        - name: DEBUG
+          value: {{ .Values.flask.env.DEBUG | quote }}
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "flask-postgres.fullname" . }}-secret
+              key: database-url
+        - name: SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "flask-postgres.fullname" . }}-secret
+              key: secret-key
+        - name: SQLALCHEMY_DATABASE_URI
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "flask-postgres.fullname" . }}-secret
+              key: database-url
+        
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        
+        resources:
+          {{- toYaml .Values.flask.resources | nindent 12 }}
+      
+      initContainers:
+      - name: wait-for-db
+        image: busybox:1.28
+        command:
+          - sh
+          - -c
+          - |
+            until nc -z {{ include "flask-postgres.fullname" . }}-postgres 5432; do
+              echo 'Waiting for PostgreSQL to be ready...'
+              sleep 2
+            done
